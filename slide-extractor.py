@@ -61,7 +61,7 @@ def main():
 		tqdm.write('Merging image-only & text-only PDF...')
 		merge('combine-text.pdf', 'combine-img.pdf', filename + '.pdf') # save file where video file is
 		tqdm.write('Temporary files removed\n')
-		subprocess.call(['bash', '-c', 'rm frame*.png frame*.pdf combine-*.pdf'])
+		subprocess.call(['bash', '-c', 'rm -f frame*.png frame*.pdf combine-*.pdf'])
 
 def distance(s1, s2):
 	# return distance of two hashes
@@ -78,16 +78,16 @@ def merge(textonlyPDF, imageonlyPDF, ofilename):
 	cf. https://github.com/tesseract-ocr/tesseract/issues/660#issuecomment-273629726
 	'''
 	with open(textonlyPDF, 'rb') as f1, open(imageonlyPDF, 'rb') as f2:
-		# PdfFileReader isn't usable as context-manager
-		pdf1, pdf2 = (PyPDF2.PdfFileReader(x) for x in (f1, f2))
-		opdf = PyPDF2.PdfFileWriter()
+		# PdfReader isn't usable as context-manager
+		pdf1, pdf2 = (PyPDF2.PdfReader(x) for x in (f1, f2))
+		opdf = PyPDF2.PdfWriter()
 		for page1, page2 in zip(pdf1.pages, pdf2.pages):
-			page1.mergePage(page2)
-			opdf.addPage(page1)
+			page1.merge_page(page2)
+			opdf.add_page(page1)
 		n1, n2 = len(pdf1.pages), len(pdf2.pages)
 		if n1 != n2:
 			for page in (pdf2.pages[n1:] if n1 < n2 else pdf1.pages[n2:]):
-				opdf.addPage(page)
+				opdf.add_page(page)
 		with open(ofilename, 'wb') as g:
 			opdf.write(g)
 
