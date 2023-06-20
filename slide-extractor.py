@@ -40,15 +40,17 @@ def main():
                 idx += 1
             count += 1
 
-        # bash script: img2pdf, tesseract, ghostscript
-        FNULL = open(os.devnull, 'w')
-        tqdm.write('Generating image-only PDF...')
-        # subprocess.call(['bash', '-c', 'convert frame*.png combine-img.pdf'], stdout=FNULL, stderr=subprocess.STDOUT) # imagicmagick
-        subprocess.call(['bash', '-c', 'img2pdf frame*.png -o combine-img.pdf'], stdout=FNULL, stderr=subprocess.STDOUT)
-        tqdm.write('Running OCR...')
-        subprocess.call(['bash', '-c', 'for i in frame*.png; do tesseract -c textonly_pdf=1 $i $i pdf; done;'], stdout=FNULL, stderr=subprocess.STDOUT)
-        tqdm.write('Generating text-only PDF...')
-        subprocess.call(['bash', '-c', 'gs -dNOPAUSE -sDEVICE=pdfwrite -sOUTPUTFILE=combine-text.pdf -dBATCH frame*.pdf;'], stdout=FNULL, stderr=subprocess.STDOUT)
+
+		# bash script: img2pdf, tesseract, ghostscript
+		FNULL = open(os.devnull, 'w')
+		tqdm.write('Generating image-only PDF...')
+		# subprocess.call(['bash', '-c', 'convert frame*.png combine-img.pdf'], stdout=FNULL, stderr=subprocess.STDOUT) # imagicmagick
+		subprocess.call(['bash', '-c', 'img2pdf frame*.png -o combine-img.pdf'], stdout=FNULL, stderr=subprocess.STDOUT)
+		tqdm.write('Running OCR...')
+		subprocess.call(['bash', '-c', 'for i in frame*.png; do tesseract -c textonly_pdf=1 $i ${i%.*} pdf; done;'], stdout=FNULL, stderr=subprocess.STDOUT)
+		tqdm.write('Generating text-only PDF...')
+		subprocess.call(['bash', '-c', 'gs -dNOPAUSE -sDEVICE=pdfwrite -sOUTPUTFILE=combine-text.pdf -dBATCH frame*.pdf;'], stdout=FNULL, stderr=subprocess.STDOUT)
+
 
         # merge pdf
         tqdm.write('Merging image-only & text-only PDF...')
