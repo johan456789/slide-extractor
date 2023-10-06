@@ -14,8 +14,13 @@ Put `slide-extractor.py` in the video directory, run `python slide-extractor.py`
 
 ## Dependencies
 
+Linux or OSX with Brew
 ```bash
 brew install tesseract ghostscript
+```
+Windows 10 with WSL
+```bash
+bash -c "sudo apt-get install tesseract-ocr ghostscript -y"
 ```
 
 ```python
