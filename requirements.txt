@@ -1,0 +1,6 @@
+tqdm
+pillow
+imagehash
+opencv-python
+PyPDF2
+img2pdf

@@ -13,8 +13,9 @@ DIFF_THRESHOLD = 3
 
 def main():
     for filename in tqdm(sorted(glob.glob('**/*.mp4', recursive=True))):
-        basename = os.path.basename(filename)
-        tqdm.write('Extracting key frames from ' + basename + ', may take a minute...')
+        #Basename tracks the title
+        basename = os.path.basename(filename).replace('.mp4','')
+        tqdm.write('Extracting key frames from ' + filename + ', may take a minute...')
 
         cap = cv2.VideoCapture(filename)
         success, cv2_im = cap.read()
@@ -46,13 +47,13 @@ def main():
         # subprocess.call(['bash', '-c', 'convert frame*.png combine-img.pdf'], stdout=FNULL, stderr=subprocess.STDOUT) # imagicmagick
         subprocess.call(['bash', '-c', 'img2pdf frame*.png -o combine-img.pdf'], stdout=FNULL, stderr=subprocess.STDOUT)
         tqdm.write('Running OCR...')
-        subprocess.call(['bash', '-c', 'for i in frame*.png; do tesseract -c textonly_pdf=1 $i $i pdf; done;'], stdout=FNULL, stderr=subprocess.STDOUT)
+        subprocess.call(['bash', '-c', 'for i in frame*.png; do tesseract -c textonly_pdf=1 $i ${i%.*} pdf; done;'], stdout=FNULL, stderr=subprocess.STDOUT)
         tqdm.write('Generating text-only PDF...')
         subprocess.call(['bash', '-c', 'gs -dNOPAUSE -sDEVICE=pdfwrite -sOUTPUTFILE=combine-text.pdf -dBATCH frame*.pdf;'], stdout=FNULL, stderr=subprocess.STDOUT)
 
         # merge pdf
         tqdm.write('Merging image-only & text-only PDF...')
-        merge('combine-text.pdf', 'combine-img.pdf', filename + '.pdf') # save file where video file is
+        merge('combine-text.pdf', 'combine-img.pdf', basename + '.pdf') # save file where video file is
         tqdm.write('Temporary files removed\n')
         subprocess.call(['bash', '-c', 'rm -f frame*.png frame*.pdf combine-*.pdf'])
 
