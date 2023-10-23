@@ -15,7 +15,7 @@ def main():
     for filename in tqdm(sorted(glob.glob('**/*.mp4', recursive=True))):
         #Basename tracks the title
         basename = os.path.basename(filename).replace('.mp4','')
-        tqdm.write('Extracting key frames from ' + basename + ', may take a minute...')
+        tqdm.write('Extracting key frames from ' + filename + ', may take a minute...')
 
         cap = cv2.VideoCapture(filename)
         success, cv2_im = cap.read()
