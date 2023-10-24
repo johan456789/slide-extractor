@@ -59,4 +59,4 @@ Python packages: [tqdm](https://tqdm.github.io), [pillow](https://pillow.readthe
 
 ## Sidenote
 
-This program is intended for use on MOOC videos. For Cousera and edX, you can check out [coursera-dl](https://github.com/coursera-dl/coursera-dl) and [edx-dl](https://github.com/coursera-dl/edx-dl) to download videos in batch.
+This program is intended for use on MOOC videos. For Cousera and edX, you can check out [coursera-dl](https://github.com/coursera-dl/coursera-dl) and [edx-dl](https://github.com/coursera-dl/edx-dl) to download videos in batch. :)
