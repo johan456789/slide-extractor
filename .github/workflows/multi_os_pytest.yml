@@ -1,0 +1,74 @@
+name: Multi OS Pytest Workflow
+
+on:
+  pull_request:
+    branches:
+      - master # or main or any other branch you want this to run on
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+      
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install bash (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
+      run: sudo apt-get install bash -y
+
+    - name: Install bash (macOS)
+      if: matrix.os == 'macOS-latest'
+      run: brew install bash
+
+    - name: Install bash (Windows)
+      if: matrix.os == 'windows-latest'
+      run: choco install git-with-openssh -y
+
+    - name: Install Tools (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
+      run: bash -c "sudo apt-get update && sudo apt-get install img2pdf tesseract-ocr ghostscript -y"
+
+    - name: Install Tools (macOS)
+      if: matrix.os == 'macOS-latest'
+      run: bash -c "brew update && brew install img2pdf tesseract ghostscript"
+
+    - name: Install Tools (Windows)
+      if: matrix.os == 'windows-latest'
+      run: bash -c "choco install img2pdf tesseract ghostscript -y"
+
+    - name: Set up Python virtual environment
+      run: |
+        python -m pip install --upgrade pip
+        python -m venv venv
+        . venv/bin/activate # On Windows, you might need to change this to: venv\Scripts\Activate
+
+    - name: Install requirements
+      run: pip install -r requirements.txt && pip install pytest
+
+    - name: Run pytest
+      run: pytest > pytest_output.txt
+      id: pytest_results
+      continue-on-error: true
+
+    - name: Comment PR with pytest results
+      uses: actions/github-script@v5
+      with:
+        script: |
+          const { context, github } = require('@actions/github');
+          const fs = require('fs');
+          const result = fs.readFileSync('pytest_output.txt', 'utf8');
+          const commentBody = `
+            ## Pytest Results:
+            \`\`\`
+            ${result}
+            \`\`\`
+          `;
+          github.issues.createComment({
+            ...context.repo,
+            issue_number: context.payload.pull_request.number,
+            body: commentBody
+          });
