@@ -26,7 +26,7 @@ jobs:
 
     - name: Install bash (Windows)
       if: matrix.os == 'windows-latest'
-      run: choco install git-with-openssh -y
+      run: choco install git -y
 
     - name: Install Tools (Ubuntu)
       if: matrix.os == 'ubuntu-latest'
